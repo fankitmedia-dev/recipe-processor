@@ -1,0 +1,9 @@
+{
+  "name": "recipe-processor-functions",
+  "version": "1.0.0",
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.18.0",
+    "sqlite3": "^5.1.7",
+    "sqlite": "^5.1.1"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "recipe-processor",
+  "version": "1.0.0",
+  "scripts": {
+    "install-all": "npm install && cd recipe-processor-frontend && npm install && cd ../recipe-processor-backend && npm install",
+    "start-frontend": "cd recipe-processor-frontend && npm run dev",
+    "start-backend": "cd recipe-processor-backend && npm start",
+    "start": "bash start.sh",
+    "stop": "bash stop.sh",
+    "restart": "pm2 restart all",
+    "status": "pm2 status",
+    "logs": "pm2 logs",
+    "monit": "pm2 monit",
+    "build": "cd recipe-processor-frontend && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "dependencies": {
+    "sqlite": "^5.1.1",
+    "sqlite3": "^5.1.7"
+  }
+}

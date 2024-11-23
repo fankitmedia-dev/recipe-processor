@@ -1,0 +1,19 @@
+[build]
+  base = "recipe-processor-frontend"
+  publish = "build"
+  command = "npm run build"
+  functions = "functions"
+
+[functions]
+  directory = "functions"
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
