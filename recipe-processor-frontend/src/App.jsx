@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useState } from 'react';
+import React from 'react';
 import AIProcessor from './components/AIProcessor';
 import { Box, Container, Typography, CssBaseline, ThemeProvider, createTheme } from '@mui/material';
 

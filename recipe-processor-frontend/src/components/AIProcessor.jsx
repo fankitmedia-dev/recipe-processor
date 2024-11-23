@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import Papa from 'papaparse';
 import axios from 'axios';
 
 // Rate limits configuration
 const MAX_RETRIES = 5;  // Increased from 3 to 5
-const BASE_DELAY = 10;
 const RATE_LIMITS = {
   gpt: {
     requestsPerMinute: 10000,
@@ -309,51 +308,6 @@ const splitIntoBatches = (messages) => {
 };
 
 const AIProcessor = () => {
-  // Initialize state from localStorage or defaults
-  const [modelConfig, setModelConfig] = useState(() => {
-    const savedConfig = localStorage.getItem('modelConfig');
-    if (savedConfig) {
-      return JSON.parse(savedConfig);
-    }
-    return {
-      gpt: {
-        model: 'gpt4o-2024-06-06',
-        token: 4000,
-        systemPrompt: 'The output should read like an experienced friend guiding you through their favorite recipe, while maintaining clean, semantic HTML markup without any surrounding code block indicators.',
-        active: false,
-        visionModel: 'gpt-4-vision-preview',
-        visionEnabled: false
-      },
-      gemini: {
-        model: 'gemini-1.5-flash',
-        token: 8092,
-        systemPrompt: 'You are a helpfull assistant.',
-        active: true,
-        visionModel: 'gemini-pro-vision',
-        visionEnabled: false
-      },
-      claude: {
-        model: 'claude-3-5-sonnet-20240620',
-        token: 4050,
-        systemPrompt: 'You are an expert in HTML. From now on you',
-        active: false,
-        visionModel: 'claude-3-opus-20240229',
-        visionEnabled: false
-      },
-      perplexity: {
-        model: 'llama-3.1-sonar-small-128k-online',
-        token: 4050,
-        systemPrompt: 'be precise and factually correct',
-        active: false,
-        visionEnabled: false
-      }
-    };
-  });
-
-  const [selectedModel, setSelectedModel] = useState(() => {
-    return localStorage.getItem('selectedModel') || 'gemini';
-  });
-
   const [csvData, setCsvData] = useState(null);
   const [columns, setColumns] = useState([]);
   const [prompts, setPrompts] = useState([]);
@@ -378,9 +332,6 @@ const AIProcessor = () => {
 
   // Add new state for tracking processed columns
   const [processedColumns, setProcessedColumns] = useState({});
-
-  // Add this to the existing imports
-  const [dependencyMap, setDependencyMap] = useState({});
 
   // Add new state for preview visibility
   const [showPreview, setShowPreview] = useState(false);
@@ -1427,84 +1378,6 @@ const AIProcessor = () => {
           <option value="claude">Claude</option>
           <option value="perplexity">Perplexity</option>
         </select>
-      </div>
-
-      {/* Model Configuration */}
-      <div style={{ marginBottom: '30px' }}>
-        <h2 style={{ fontSize: '1.2rem', fontWeight: '600', color: '#2d3748', marginBottom: '20px' }}>
-          AI Model Configuration
-        </h2>
-        <div style={{ display: 'grid', gap: '20px' }}>
-          <div style={{ 
-            padding: '15px',
-            backgroundColor: '#f7fafc',
-            borderRadius: '6px',
-            border: '1px solid #e2e8f0'
-          }}>
-            <div style={{ fontWeight: '500', marginBottom: '10px', color: '#4a5568' }}>{selectedModel}</div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 120px', gap: '10px', marginBottom: '10px' }}>
-              <input
-                type="text"
-                value={modelConfig[selectedModel].model}
-                onChange={(e) => updateModelConfig(selectedModel, 'model', e.target.value)}
-                style={{ padding: '8px', border: '1px solid #e2e8f0', borderRadius: '4px' }}
-              />
-              <input
-                type="number"
-                value={modelConfig[selectedModel].token}
-                onChange={(e) => updateModelConfig(selectedModel, 'token', parseInt(e.target.value))}
-                style={{ padding: '8px', border: '1px solid #e2e8f0', borderRadius: '4px' }}
-              />
-            </div>
-            <textarea
-              value={modelConfig[selectedModel].systemPrompt}
-              onChange={(e) => updateModelConfig(selectedModel, 'systemPrompt', e.target.value)}
-              style={{ 
-                width: '100%', 
-                padding: '8px', 
-                border: '1px solid #e2e8f0', 
-                borderRadius: '4px', 
-                height: '80px',
-                resize: 'vertical'
-              }}
-            />
-            
-            {modelConfig[selectedModel].visionModel && (
-              <div style={{ 
-                marginTop: '10px', 
-                display: 'flex', 
-                alignItems: 'center', 
-                gap: '15px',
-                padding: '10px',
-                backgroundColor: '#edf2f7',
-                borderRadius: '4px'
-              }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <input
-                    type="checkbox"
-                    checked={modelConfig[selectedModel].visionEnabled}
-                    onChange={(e) => updateModelConfig(selectedModel, 'visionEnabled', e.target.checked)}
-                  />
-                  <span>Enable Vision Analysis</span>
-                </label>
-                {modelConfig[selectedModel].visionEnabled && (
-                  <input
-                    type="text"
-                    value={modelConfig[selectedModel].visionModel}
-                    onChange={(e) => updateModelConfig(selectedModel, 'visionModel', e.target.value)}
-                    placeholder="Vision Model ID"
-                    style={{ 
-                      flex: 1,
-                      padding: '8px', 
-                      border: '1px solid #e2e8f0', 
-                      borderRadius: '4px' 
-                    }}
-                  />
-                )}
-              </div>
-            )}
-          </div>
-        </div>
       </div>
 
       {/* Prompts Section */}
