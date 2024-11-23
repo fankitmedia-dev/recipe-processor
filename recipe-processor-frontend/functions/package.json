@@ -1,9 +1,16 @@
 {
   "name": "recipe-processor-functions",
   "version": "1.0.0",
+  "description": "Netlify Functions for Recipe Processor",
+  "main": "index.js",
   "dependencies": {
     "@anthropic-ai/sdk": "^0.18.0",
-    "sqlite3": "^5.1.7",
-    "sqlite": "^5.1.1"
+    "@google/generative-ai": "^0.2.1",
+    "axios": "^1.6.7",
+    "better-sqlite3": "^9.4.3",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.19"
   }
 }
