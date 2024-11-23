@@ -3,7 +3,7 @@ import Papa from 'papaparse';
 import axios from 'axios';
 
 // Rate limits configuration
-const MAX_RETRIES = 5;  // Increased from 3 to 5
+const MAX_RETRIES = 5;
 const RATE_LIMITS = {
   gpt: {
     requestsPerMinute: 10000,
@@ -26,6 +26,40 @@ const RATE_LIMITS = {
     requestsPerMinute: 50,
     minDelay: 2000,
     timeout: 60000   // 60 seconds
+  }
+};
+
+const DEFAULT_MODEL_CONFIG = {
+  gpt: {
+    model: 'gpt4o-2024-06-06',
+    token: 4000,
+    systemPrompt: 'The output should read like an experienced friend guiding you through their favorite recipe, while maintaining clean, semantic HTML markup without any surrounding code block indicators.',
+    active: false,
+    visionModel: 'gpt-4-vision-preview',
+    visionEnabled: false
+  },
+  gemini: {
+    model: 'gemini-1.5-flash',
+    token: 8092,
+    systemPrompt: 'You are a helpful assistant.',
+    active: true,
+    visionModel: 'gemini-pro-vision',
+    visionEnabled: false
+  },
+  claude: {
+    model: 'claude-3-5-sonnet-20240620',
+    token: 4050,
+    systemPrompt: 'You are an expert in HTML.',
+    active: false,
+    visionModel: 'claude-3-opus-20240229',
+    visionEnabled: false
+  },
+  perplexity: {
+    model: 'llama-3.1-sonar-small-128k-online',
+    token: 4050,
+    systemPrompt: 'be precise and factually correct',
+    active: false,
+    visionEnabled: false
   }
 };
 
@@ -349,6 +383,17 @@ const AIProcessor = () => {
   // Add state for batch jobs
   const [batchJobs, setBatchJobs] = useState([]);
 
+  // Add state for selected model
+  const [selectedModel, setSelectedModel] = useState(() => 
+    localStorage.getItem('selectedModel') || 'claude'
+  );
+
+  // Add state for model configuration
+  const [modelConfig, setModelConfig] = useState(() => {
+    const savedConfig = localStorage.getItem('modelConfig');
+    return savedConfig ? JSON.parse(savedConfig) : DEFAULT_MODEL_CONFIG;
+  });
+
   // Handle storage errors
   useEffect(() => {
     const handleStorageError = (e) => {
@@ -362,6 +407,16 @@ const AIProcessor = () => {
     return () => window.removeEventListener('error', handleStorageError);
   }, []);
 
+  // Save model config when it changes
+  useEffect(() => {
+    localStorage.setItem('modelConfig', JSON.stringify(modelConfig));
+  }, [modelConfig]);
+
+  // Save selected model when it changes
+  useEffect(() => {
+    localStorage.setItem('selectedModel', selectedModel);
+  }, [selectedModel]);
+
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const handleError = (error, context = '') => {
@@ -372,7 +427,6 @@ const AIProcessor = () => {
   };
   const handleModelSelect = (model) => {
     setSelectedModel(model);
-    localStorage.setItem('selectedModel', model);
   };
 
   const updateModelConfig = (model, field, value) => {
@@ -384,7 +438,6 @@ const AIProcessor = () => {
           [field]: value
         }
       };
-      localStorage.setItem('modelConfig', JSON.stringify(newConfig));
       return newConfig;
     });
   };
