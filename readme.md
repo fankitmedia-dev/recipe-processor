@@ -15,12 +15,19 @@ A powerful tool for processing recipe data using AI. Supports batch processing w
 
 - Node.js (v14 or higher)
 - npm (v6 or higher)
+- Git
+- GitHub account
+- Netlify account
+- API keys for:
+  - Claude API (Anthropic)
+  - Gemini API (Google)
+  - OpenAI API (optional)
 
-## Quick Start
+## Local Development Setup
 
 1. Clone the repository:
    ```bash
-   git clone [your-repo-url]
+   git clone https://github.com/fankitmedia-dev/recipe-processor.git
    cd recipe-processor
    ```
 
@@ -34,69 +41,133 @@ A powerful tool for processing recipe data using AI. Supports batch processing w
    node setup.js
    ```
 
-4. Edit API keys in `recipe-processor-backend/.env`:
-   ```
-   CLAUDE_API_KEY=your_claude_api_key_here
-   GEMINI_API_KEY=your_gemini_api_key_here
-   OPENAI_API_KEY=your_openai_api_key_here
-   ```
-
-5. Install dependencies for both frontend and backend:
+4. Install dependencies for both frontend and backend:
    ```bash
    cd recipe-processor-backend && npm install
    cd ../recipe-processor-frontend && npm install
    ```
 
+5. Create `.env` files:
+
+   Backend (.env):
+   ```
+   CLAUDE_API_KEY=your_claude_api_key_here
+   GEMINI_API_KEY=your_gemini_api_key_here
+   OPENAI_API_KEY=your_openai_api_key_here
+   PORT=3001
+   ```
+
 6. Start the application:
 
-   In one terminal:
+   Backend:
    ```bash
    cd recipe-processor-backend
    npm start
    ```
 
-   In another terminal:
+   Frontend:
    ```bash
    cd recipe-processor-frontend
    npm start
    ```
 
-7. Open your browser and navigate to `http://localhost:3000`
+## GitHub Setup
 
-## Batch Processing
+1. Create a new repository on GitHub:
+   - Go to [GitHub](https://github.com)
+   - Click "+" → "New repository"
+   - Name: "recipe-processor"
+   - Make it public or private
+   - Click "Create repository"
 
-The application now supports efficient batch processing using Claude's Batch API:
+2. Generate Personal Access Token (PAT):
+   - Go to GitHub.com → Profile picture → Settings
+   - Developer settings → Personal access tokens → Tokens (classic)
+   - Generate new token (classic)
+   - Name: "Recipe Processor Deploy"
+   - Select scopes:
+     - `repo` (all)
+     - `workflow`
+   - Copy the generated token
 
-- Upload large datasets (up to 10,000 rows per batch)
-- 50% cost reduction compared to standard processing
-- Process multiple sheets simultaneously
-- Track progress in real-time
-- Results persist across app restarts
+3. Configure Git:
+   ```bash
+   git config --global user.name "Your Name"
+   git config --global user.email "your@email.com"
+   git remote set-url origin https://YOUR_PAT@github.com/your-username/recipe-processor.git
+   ```
 
-### How Batch Processing Works
+4. Push code:
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   git push -u origin main
+   ```
 
-1. Upload your sheet as normal
-2. The system automatically creates a batch job
-3. You can:
-   - Keep the app open to see real-time progress
-   - Close the app and come back later
-   - Process multiple sheets at once
-4. Results are saved automatically
-5. Jobs are cleaned up after 29 days
+## Netlify Deployment
 
-## Development
+1. Connect to GitHub:
+   - Go to [Netlify](https://app.netlify.com)
+   - Click "Add new site" → "Import an existing project"
+   - Choose "Deploy with GitHub"
+   - Select "recipe-processor" repository
 
-### Project Structure
+2. Configure build settings:
+   - Build command: `CI= npm install && npm run build`
+   - Publish directory: `build`
+   - Base directory: `recipe-processor-frontend`
 
+3. Environment variables:
+   - Go to Site settings → Environment variables
+   - Add the following:
+     ```
+     CLAUDE_API_KEY=your_claude_api_key
+     GEMINI_API_KEY=your_gemini_api_key
+     OPENAI_API_KEY=your_openai_api_key (optional)
+     ```
+
+4. Deploy:
+   - Click "Deploy site"
+   - Wait for build and deployment
+   - Your site will be available at `https://your-site-name.netlify.app`
+
+## API Keys Setup
+
+1. Claude API (Anthropic):
+   - Go to [Anthropic Console](https://console.anthropic.com)
+   - Sign up or log in
+   - Go to API Keys section
+   - Create a new API key
+   - Copy and save it securely
+
+2. Gemini API (Google):
+   - Visit [Google AI Studio](https://makersuite.google.com/app/apikey)
+   - Create or select a project
+   - Enable the Gemini API
+   - Create credentials (API key)
+   - Copy and save it securely
+
+3. OpenAI API (Optional):
+   - Go to [OpenAI Platform](https://platform.openai.com)
+   - Sign up or log in
+   - Go to API keys section
+   - Create a new secret key
+   - Copy and save it securely
+
+## Environment Variables
+
+Create these environment variables in both your local setup and Netlify:
+
+```env
+# Required
+CLAUDE_API_KEY=your_claude_api_key_here
+GEMINI_API_KEY=your_gemini_api_key_here
+
+# Optional
+OPENAI_API_KEY=your_openai_api_key_here
 ```
-recipe-processor/
-├── recipe-processor-frontend/   # React frontend
-├── recipe-processor-backend/    # Express backend
-├── setup.js                    # Setup script
-└── README.md
-```
 
-### Database Schema
+## Database Schema
 
 The application uses SQLite for persistent storage of batch jobs:
 
@@ -118,27 +189,28 @@ CREATE TABLE batch_jobs (
 
 ## Troubleshooting
 
-### Common Issues
+1. Build Issues:
+   - Ensure all required files exist in the `public` directory
+   - Check if environment variables are set correctly
+   - Try running `CI= npm run build` locally
 
-1. **Database Errors**
-   - Ensure you've run `node setup.js`
-   - Check file permissions in the backend directory
+2. API Issues:
+   - Verify API keys are correct
+   - Check API quotas and limits
+   - Look for error messages in the console
 
-2. **API Key Issues**
-   - Verify your API keys in `.env`
-   - Ensure you have the correct permissions for the APIs
+3. Database Issues:
+   - Ensure SQLite is installed
+   - Check file permissions
+   - Verify database path is correct
 
-3. **Processing Errors**
-   - Check your internet connection
-   - Verify the input data format
-   - Check the job status in the UI
+## Support
 
-### Getting Help
-
-If you encounter any issues:
-1. Check the console logs in both frontend and backend
+For issues and support:
+1. Check the console logs
 2. Look for error messages in the UI
-3. Check the batch job status in the database
+3. Check the batch job status
+4. Create an issue on GitHub
 
 ## License
 
