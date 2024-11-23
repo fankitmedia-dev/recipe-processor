@@ -56,6 +56,12 @@ const formatCellContent = (content) => {
   }
 };
 
+// Add error cell detection utility
+const isErrorCell = (content) => {
+  if (!content) return false;
+  return typeof content === 'string' && content.toLowerCase().includes('error');
+};
+
 // Add this new component for the CSV preview
 const CSVPreview = ({ data, columns }) => {
   const [page, setPage] = useState(1);
