@@ -649,9 +649,9 @@ const AIProcessor = () => {
         return '';
       }
 
-      // For Claude model, implement token-based rate limiting
+      let inputTokenCount = 0;
       if (selectedModel === 'claude') {
-        const inputTokenCount = estimateTokens(processedPrompt) + 
+        inputTokenCount = estimateTokens(processedPrompt) + 
           estimateTokens(modelConfig.claude.systemPrompt);
         
         // Check if we're within rate limits
@@ -661,6 +661,8 @@ const AIProcessor = () => {
 
         // Add delay based on requests per minute
         await sleep(RATE_LIMITS.claude.minDelay);
+      } else {
+        inputTokenCount = estimateTokens(processedPrompt);
       }
 
       abortController.current = new AbortController();
